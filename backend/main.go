@@ -2,6 +2,7 @@ package main
 
 import (
 	"chess-tutor/database"
+	"chess-tutor/handler"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,6 +17,7 @@ func main() {
 			"status": "ok",
 		})
 	})
+	r.GET("/lichess/games/:username", handler.GetLichessGames)
 
 	r.Run(":8080")
 }

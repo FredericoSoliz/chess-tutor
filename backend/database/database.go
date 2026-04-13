@@ -5,6 +5,8 @@ import (
 	"log"
 	"os"
 
+	"chess-tutor/model"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -27,5 +29,13 @@ func InitDB() {
 		log.Fatal("Failed to connect DB:", err)
 	}
 
-	fmt.Println("Connected to PostgreSQL")
+	fmt.Println("Running migrations...")
+	err = DB.AutoMigrate(&model.User{}, &model.Game{})
+	fmt.Println("Finished migrations")
+
+	if err != nil {
+		log.Fatal("Failed to migrate DB:", err)
+	}
+
+	fmt.Println("Connected to PostgreSQL and migrated")
 }
