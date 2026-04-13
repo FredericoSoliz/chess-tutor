@@ -1,8 +1,14 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"chess-tutor/database"
+
+	"github.com/gin-gonic/gin"
+)
 
 func main() {
+	database.InitDB()
+
 	r := gin.Default()
 
 	r.GET("/health", func(c *gin.Context) {
