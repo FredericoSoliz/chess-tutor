@@ -1,0 +1,11 @@
+# IDE
+.idea/
+*.iml
+
+# ENV
+.env
+backend/.env
+
+# Go
+/bin/
+/vendor/
