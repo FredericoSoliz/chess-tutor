@@ -12,6 +12,13 @@ services:
       DB_NAME: chess
       DB_PORT: 5432
 
+  ai-service:
+    build: ./ai-service
+    ports:
+      - "5000:5000"
+    environment:
+      - STOCKFISH_PATH=/usr/games/stockfish
+      
   db:
     image: postgres:15
     container_name: chess-db

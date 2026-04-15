@@ -9,3 +9,10 @@ backend/.env
 # Go
 /bin/
 /vendor/
+
+# Python 
+ai-service/__pycache__/
+ai-service/*.pyc
+ai-service/venv/
+ai-service/stockfish/
+ai-service/*.exe
