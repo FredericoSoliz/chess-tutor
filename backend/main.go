@@ -3,6 +3,7 @@ package main
 import (
 	"chess-tutor/database"
 	"chess-tutor/handler"
+	"chess-tutor/middleware"
 	"chess-tutor/service"
 
 	"github.com/gin-gonic/gin"
@@ -25,8 +26,19 @@ func main() {
 	engineService := service.NewEngineService()
 	engineHandler := handler.NewEngineHandler(engineService)
 
-	r.GET("/lichess/games/:username", lichessHandler.GetLichessGames)
-	r.POST("/api/analyze/position", engineHandler.AnalyzePosition)
+	authService := service.NewAuthService()
+	jwtService := service.NewJWTService()
+
+	authHandler := handler.NewAuthHandler(authService, jwtService)
+
+	r.POST("/auth/register", authHandler.Register)
+	r.POST("/auth/login", authHandler.Login)
+
+	protected := r.Group("/")
+	protected.Use(middleware.AuthMiddleware(jwtService))
+
+	protected.GET("/lichess/games/:username", lichessHandler.GetLichessGames)
+	protected.POST("/api/analyze/position", engineHandler.AnalyzePosition)
 
 	r.Run(":8080")
 }

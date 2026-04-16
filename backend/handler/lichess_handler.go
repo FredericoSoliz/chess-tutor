@@ -32,6 +32,27 @@ func (h *LichessHandler) GetLichessGames(c *gin.Context) {
 		return
 	}
 
+	usernameInterface, exists := c.Get("username")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"status":  http.StatusUnauthorized,
+			"message": "Unauthorized",
+		})
+		return
+	}
+
+	username := usernameInterface.(string)
+
+	var user model.User
+	err := database.DB.Where("username = ?", username).First(&user).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"message": "User not found in DB",
+		})
+		return
+	}
+
 	gamesDTO, err := h.service.GetUserGames(req.Username)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -40,12 +61,6 @@ func (h *LichessHandler) GetLichessGames(c *gin.Context) {
 		})
 		return
 	}
-
-	var user model.User
-
-	database.DB.FirstOrCreate(&user, model.User{
-		Username: req.Username,
-	})
 
 	games := dto.ToGameList(gamesDTO, user.ID)
 
@@ -67,6 +82,8 @@ func (h *LichessHandler) GetLichessGames(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"status":   http.StatusOK,
 		"message":  "Games processed!",
+		"lichess":  req.Username,
+		"user":     username,
 		"received": len(games),
 		"inserted": inserted,
 	})

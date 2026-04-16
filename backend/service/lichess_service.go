@@ -21,7 +21,7 @@ func NewLichessService() LichessService {
 }
 
 func (s *lichessService) GetUserGames(username string) ([]dto.LichessGame, error) {
-	url := fmt.Sprintf("https://lichess.org/api/games/user/%s?max=10&pgnInJson=true&opening=true", username)
+	url := fmt.Sprintf("https://lichess.org/api/games/user/%s?max=30&pgnInJson=true&opening=true", username)
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
