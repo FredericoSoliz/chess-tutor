@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 
 	"chess-tutor/database"
@@ -9,25 +10,46 @@ import (
 	"chess-tutor/service"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
-func GetLichessGames(c *gin.Context) {
-	username := c.Param("username")
+type LichessHandler struct {
+	service service.LichessService
+}
 
-	gamesDTO, err := service.GetUserGames(username)
+func NewLichessHandler(service service.LichessService) *LichessHandler {
+	return &LichessHandler{service: service}
+}
+
+func (h *LichessHandler) GetLichessGames(c *gin.Context) {
+	var req dto.GetLichessGamesRequest
+
+	if err := c.ShouldBindUri(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  http.StatusBadRequest,
+			"message": "Invalid username!",
+		})
+		return
+	}
+
+	gamesDTO, err := h.service.GetUserGames(req.Username)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
+			"status":  http.StatusInternalServerError,
+			"message": "Failed to fetch games!",
 		})
 		return
 	}
 
 	var user model.User
+
 	database.DB.FirstOrCreate(&user, model.User{
-		Username: username,
+		Username: req.Username,
 	})
 
 	games := dto.ToGameList(gamesDTO, user.ID)
+
+	inserted := 0
 
 	for _, g := range games {
 		var existing model.Game
@@ -36,13 +58,16 @@ func GetLichessGames(c *gin.Context) {
 			Where("lichess_id = ?", g.LichessID).
 			First(&existing).Error
 
-		if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			database.DB.Create(&g)
+			inserted++
 		}
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "games saved",
-		"count":   len(games),
+		"status":   http.StatusOK,
+		"message":  "Games processed!",
+		"received": len(games),
+		"inserted": inserted,
 	})
 }

@@ -1,14 +1,23 @@
 package model
 
+import (
+	"gorm.io/datatypes"
+)
+
 type Game struct {
 	ID        uint   `gorm:"primaryKey"`
-	LichessID string `gorm:"uniqueIndex"`
+	LichessID string `gorm:"uniqueIndex;not null"`
 
 	UserID uint
 	User   User `gorm:"foreignKey:UserID"`
 
-	White  string
-	Black  string
+	White string `gorm:"not null"`
+	Black string `gorm:"not null"`
+
+	WhiteRating int
+	BlackRating int
+
 	Winner string
-	Moves  string
+
+	Data datatypes.JSON `gorm:"type:jsonb"`
 }

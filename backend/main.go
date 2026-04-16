@@ -3,6 +3,7 @@ package main
 import (
 	"chess-tutor/database"
 	"chess-tutor/handler"
+	"chess-tutor/service"
 
 	"github.com/gin-gonic/gin"
 )
@@ -17,7 +18,15 @@ func main() {
 			"status": "ok",
 		})
 	})
-	r.GET("/lichess/games/:username", handler.GetLichessGames)
+
+	lichessService := service.NewLichessService()
+	lichessHandler := handler.NewLichessHandler(lichessService)
+
+	engineService := service.NewEngineService()
+	engineHandler := handler.NewEngineHandler(engineService)
+
+	r.GET("/lichess/games/:username", lichessHandler.GetLichessGames)
+	r.POST("/api/analyze/position", engineHandler.AnalyzePosition)
 
 	r.Run(":8080")
 }
