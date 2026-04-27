@@ -34,8 +34,9 @@ func (s *authService) Register(req dto.RegisterRequest) (*model.User, error) {
 	}
 
 	user := &model.User{
-		Username: req.Username,
-		Password: string(hash),
+		Username:        req.Username,
+		Password:        string(hash),
+		LichessUsername: req.LichessUsername,
 	}
 
 	if err := database.DB.Create(user).Error; err != nil {
