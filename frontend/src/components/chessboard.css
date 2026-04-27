@@ -1,0 +1,31 @@
+.game-container{
+    display:flex;
+    align-items:flex-start;
+    gap:0;
+}
+
+.board-side{
+    display:flex;
+    flex-direction:column;
+}
+
+.board-wrapper{
+    width:520px;
+}
+
+.captured-row{
+    height:34px;
+    min-height:34px;
+
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+    padding:0 6px;
+    box-sizing:border-box;
+
+    font-size:22px;
+    color:#3a2a22;
+
+    background:#ece4d8;
+}

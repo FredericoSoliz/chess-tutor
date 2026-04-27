@@ -1,3 +1,15 @@
+import Layout from "../components/Layout";
+import ChessBoard from "../components/ChessBoard";
+import MoveHistory from "../components/MoveHistory";
+
+
 export default function Dashboard() {
-    return <h1>Dashboard</h1>;
+    return (
+        <Layout>
+
+            <ChessBoard />
+
+
+        </Layout>
+    );
 }

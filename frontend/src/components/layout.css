@@ -1,0 +1,139 @@
+/* ---------- GLOBAL LAYOUT ---------- */
+
+.app-layout {
+    display: flex;
+    min-height: 100vh;
+    background: #f5efe6;
+}
+
+/* ---------- SIDEBAR ---------- */
+
+.sidebar {
+    width: 260px;
+    background: linear-gradient(180deg, #3b281d, #241712);
+    color: white;
+
+    padding: 32px 24px;
+
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid rgba(255,255,255,0.06);
+}
+
+.sidebar-logo {
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 42px;
+    letter-spacing: -0.5px;
+}
+
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.sidebar-menu a {
+    text-decoration: none;
+    color: #d7c5b5;
+
+    padding: 14px 16px;
+    border-radius: 12px;
+
+    font-size: 15px;
+    font-weight: 500;
+
+    transition: 0.2s ease;
+}
+
+.sidebar-menu a:hover {
+    background: rgba(255,255,255,0.06);
+    color: white;
+}
+
+.sidebar-menu a.active {
+    background: rgba(255,255,255,0.12);
+    color: white;
+}
+
+/* ---------- RIGHT AREA ---------- */
+
+.main-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ---------- NAVBAR ---------- */
+
+.navbar {
+    height: 86px;
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(10px);
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 36px;
+
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.navbar h2 {
+    font-size: 28px;
+    color: #2e231c;
+    margin-bottom: 2px;
+}
+
+.navbar p {
+    font-size: 14px;
+    color: #7a6555;
+}
+
+/* ---------- BUTTON ---------- */
+
+.logout-btn {
+    border: none;
+    padding: 12px 20px;
+    border-radius: 12px;
+
+    background: #4a3124;
+    color: white;
+
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.logout-btn:hover {
+    background: #301f16;
+    transform: translateY(-1px);
+}
+
+/* ---------- PAGE CONTENT ---------- */
+
+.page-content {
+    flex: 1;
+    padding: 34px;
+}
+
+/* ---------- MOBILE ---------- */
+
+@media (max-width: 900px) {
+    .sidebar {
+        display: none;
+    }
+
+    .navbar {
+        padding: 0 20px;
+    }
+
+    .page-content {
+        padding: 20px;
+    }
+
+    .navbar h2 {
+        font-size: 22px;
+    }
+}
