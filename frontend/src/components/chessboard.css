@@ -1,12 +1,36 @@
 .game-container{
     display:flex;
     align-items:flex-start;
-    gap:0;
 }
 
 .board-side{
     display:flex;
     flex-direction:column;
+}
+
+.board-controls{
+    display:flex;
+    gap:10px;
+    margin-bottom:10px;
+}
+
+.board-controls button{
+    background:#4a2f21;
+    color:#f5efe6;
+    border:none;
+    padding:10px 16px;
+    border-radius:6px;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+.board-controls{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin-top:12px;
 }
 
 .board-wrapper{

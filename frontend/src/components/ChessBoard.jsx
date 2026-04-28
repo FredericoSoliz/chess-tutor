@@ -13,18 +13,31 @@ export default function ChessBoard() {
     const [optionSquares, setOptionSquares] = useState({});
     const [lastMove, setLastMove] = useState(null);
     const [moveHistory, setMoveHistory] = useState([]);
-
     const [capturedWhite, setCapturedWhite] = useState([]);
     const [capturedBlack, setCapturedBlack] = useState([]);
+    const [boardOrientation, setBoardOrientation] = useState("white");
+    const [redoStack, setRedoStack] = useState([]);
+
+    function rebuildCaptured() {
+        const white = [];
+        const black = [];
+
+        chessGame.history({ verbose: true }).forEach((move) => {
+            if (move.captured) {
+                if (move.color === "w") {
+                    black.push(move.captured);
+                } else {
+                    white.push(move.captured);
+                }
+            }
+        });
+
+        setCapturedWhite(white);
+        setCapturedBlack(black);
+    }
 
     function updateGameState(move) {
-        if (move.captured) {
-            if (move.color === "w") {
-                setCapturedBlack((prev) => [...prev, move.captured]);
-            } else {
-                setCapturedWhite((prev) => [...prev, move.captured]);
-            }
-        }
+        setRedoStack([]);
 
         setLastMove({
             from: move.from,
@@ -33,6 +46,7 @@ export default function ChessBoard() {
 
         setPosition(chessGame.fen());
         setMoveHistory(chessGame.history());
+        rebuildCaptured();
         setMoveFrom("");
         setOptionSquares({});
     }
@@ -106,6 +120,69 @@ export default function ChessBoard() {
         }
     }
 
+    function handleUndo() {
+        const undoneMove = chessGame.undo();
+
+        if (!undoneMove) return;
+
+        setRedoStack((prev) => [...prev, undoneMove]);
+
+        setPosition(chessGame.fen());
+        setMoveHistory(chessGame.history());
+        setLastMove(null);
+        setMoveFrom("");
+        setOptionSquares({});
+        rebuildCaptured();
+    }
+
+    function handleRedo() {
+        if (redoStack.length === 0) return;
+
+        const move = redoStack[redoStack.length - 1];
+
+        try {
+            const redoneMove = chessGame.move({
+                from: move.from,
+                to: move.to,
+                promotion: move.promotion || "q",
+            });
+
+            setRedoStack((prev) => prev.slice(0, -1));
+
+            setLastMove({
+                from: redoneMove.from,
+                to: redoneMove.to,
+            });
+
+            setPosition(chessGame.fen());
+            setMoveHistory(chessGame.history());
+            rebuildCaptured();
+            setMoveFrom("");
+            setOptionSquares({});
+        } catch {
+            return;
+        }
+    }
+
+    function handleReset() {
+        chessGame.reset();
+
+        setPosition(chessGame.fen());
+        setMoveHistory([]);
+        setCapturedWhite([]);
+        setCapturedBlack([]);
+        setLastMove(null);
+        setMoveFrom("");
+        setOptionSquares({});
+        setRedoStack([]);
+    }
+
+    function handleFlip() {
+        setBoardOrientation((prev) =>
+            prev === "white" ? "black" : "white"
+        );
+    }
+
     const lastMoveStyles = lastMove
         ? {
             [lastMove.from]: {
@@ -121,6 +198,7 @@ export default function ChessBoard() {
         position,
         onSquareClick,
         onPieceDrop,
+        boardOrientation,
         squareStyles: {
             ...lastMoveStyles,
             ...optionSquares,
@@ -130,8 +208,17 @@ export default function ChessBoard() {
 
     return (
         <div className="game-container">
-            <div className="board-wrapper">
-                <Chessboard options={options} />
+            <div className="board-side">
+                <div className="board-wrapper">
+                    <Chessboard options={options} />
+                </div>
+
+                <div className="board-controls">
+                    <button onClick={handleUndo}>↶ Undo</button>
+                    <button onClick={handleRedo}>↷ Redo</button>
+                    <button onClick={handleReset}>↺ Reset</button>
+                    <button onClick={handleFlip}>⇅ Flip</button>
+                </div>
             </div>
 
             <MoveHistory
