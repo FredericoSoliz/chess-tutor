@@ -2,9 +2,9 @@ import { useEffect, useRef } from "react";
 import "./movehistory.css";
 
 export default function MoveHistory({
-                                        moves,
-                                        capturedWhite,
-                                        capturedBlack,
+                                        moves = [],
+                                        capturedWhite = [],
+                                        capturedBlack = [],
                                     }) {
     const scrollRef = useRef(null);
 
@@ -26,7 +26,7 @@ export default function MoveHistory({
         k: "♔",
     };
 
-    function countPieces(arr) {
+    function countPieces(arr = []) {
         return arr.reduce((acc, piece) => {
             acc[piece] = (acc[piece] || 0) + 1;
             return acc;
@@ -55,7 +55,7 @@ export default function MoveHistory({
     return (
         <div className="history-panel">
             <div className="history-header">
-                Opening Explorer
+                Move History
             </div>
 
             <div className="captured-box">
@@ -70,7 +70,7 @@ export default function MoveHistory({
                 {rows.map((row) => (
                     <div className="history-row" key={row.move}>
                         <span className="move-number">
-                            {row.move}
+                            {row.move}.
                         </span>
                         <span>{row.white}</span>
                         <span>{row.black}</span>

@@ -7,6 +7,7 @@ services:
       - db
       - ai-service
     environment:
+      GIN_MODE: release
       DB_HOST: db
       DB_USER: postgres
       DB_PASSWORD: postgres
@@ -14,6 +15,19 @@ services:
       DB_PORT: 5432
       AI_SERVICE_URL: http://ai-service:5000
 
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:8080
+      - CHOKIDAR_USEPOLLING=true
+  
   ai-service:
     build: ./ai-service
     ports:

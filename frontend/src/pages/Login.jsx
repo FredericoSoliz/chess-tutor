@@ -1,14 +1,21 @@
 import { useState } from "react";
+import { useNavigate, Navigate } from "react-router-dom";
 import api from "../services/api";
 import "./login.css";
 import heroImage from "../assets/chess-hero.jpg";
 
 export default function Login() {
+    const navigate = useNavigate();
+
     const [isLogin, setIsLogin] = useState(true);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [lichessUsername, setLichessUsername] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+
+    if (localStorage.getItem("token")) {
+        return <Navigate to="/analysis" replace />;
+    }
 
     const handleSubmit = async () => {
 
@@ -38,13 +45,14 @@ export default function Login() {
 
             if (isLogin) {
                 localStorage.setItem("token", res.data.token);
-                window.location.href = "/dashboard";
+                navigate("/analysis");
             } else {
                 setIsLogin(true);
                 setUsername("");
                 setPassword("");
                 setLichessUsername("");
             }
+
         } catch (error) {
             console.log(error);
             console.log(error.response);
@@ -104,9 +112,10 @@ export default function Login() {
                             className="toggle-password"
                             onClick={() => setShowPassword(!showPassword)}
                         >
-        {showPassword ? "👁" : "◌"}
-    </span>
+                            {showPassword ? "👁" : "◌"}
+                        </span>
                     </div>
+
                     {!isLogin && (
                         <input
                             placeholder="Lichess Username (optional)"

@@ -7,7 +7,6 @@ export default function Sidebar() {
             </div>
 
             <nav className="sidebar-menu">
-                <a href="/dashboard" className="active">Dashboard</a>
                 <a href="/games">My Games</a>
                 <a href="/analysis">Analysis</a>
                 <a href="/coach">Coach</a>
