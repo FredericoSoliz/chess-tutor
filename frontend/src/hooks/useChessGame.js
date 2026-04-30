@@ -87,6 +87,8 @@ export default function useChessGame() {
         });
     }
 
+    const turn = position.split(" ")[1];
+
     return {
         position,
         history,
@@ -98,5 +100,6 @@ export default function useChessGame() {
         orientation,
         getMoves,
         flip,
+        turn,
     };
 }

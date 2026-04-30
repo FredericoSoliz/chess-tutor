@@ -21,6 +21,7 @@ export default function AnalysisPage() {
                         getMoves={game.getMoves}
                         lastMove={game.lastMove}
                         orientation={game.orientation}
+                        turn={game.turn}
                     />
 
                     <BoardControls

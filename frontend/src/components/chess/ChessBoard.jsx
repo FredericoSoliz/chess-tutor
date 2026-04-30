@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Chessboard } from "react-chessboard";
+import {useEffect, useState} from "react";
+import {Chessboard} from "react-chessboard";
 
 import "./chessboard.css";
 
@@ -8,7 +8,8 @@ export default function ChessBoard({
                                        onMove,
                                        getMoves,
                                        lastMove,
-                                       orientation = "white"
+                                       orientation = "white",
+                                       turn = "w",
                                    }) {
     const [moveFrom, setMoveFrom] = useState("");
     const [optionSquares, setOptionSquares] = useState({});
@@ -94,13 +95,11 @@ export default function ChessBoard({
     function onPieceDrop({ sourceSquare, targetSquare }) {
         if (!targetSquare) return false;
 
-        const success = onMove({
+        return onMove({
             from: sourceSquare,
             to: targetSquare,
             promotion: "q",
         });
-
-        return success;
     }
 
     const lastMoveStyles = lastMove
@@ -114,10 +113,15 @@ export default function ChessBoard({
         }
         : {};
 
+    function canDragPiece({ piece }) {
+        return piece?.pieceType?.[0] === turn;
+    }
+
     const options = {
         position,
         onSquareClick,
         onPieceDrop,
+        canDragPiece,
         boardOrientation: orientation,
         squareStyles: {
             ...lastMoveStyles,
