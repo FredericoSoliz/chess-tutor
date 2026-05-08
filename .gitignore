@@ -1,0 +1,30 @@
+# env files (in any subdirectory)
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+
+# Node
+node_modules/
+dist/
+dist-ssr/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+!.vscode/extensions.json
+
+# logs
+*.log
+
+# Claude
+.claude/

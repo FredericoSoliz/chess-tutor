@@ -17,7 +17,8 @@ type Game struct {
 	WhiteRating int
 	BlackRating int
 
-	Winner string
+	Winner   string
+	PlayedAt int64 `gorm:"index"`
 
 	Data datatypes.JSON `gorm:"type:jsonb"`
 }

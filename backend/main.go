@@ -4,6 +4,7 @@ import (
 	"chess-tutor/database"
 	"chess-tutor/handler"
 	"chess-tutor/middleware"
+	"chess-tutor/repository"
 	"chess-tutor/service"
 	"time"
 
@@ -30,8 +31,13 @@ func main() {
 		})
 	})
 
+	gameRepo := repository.NewGameRepository(database.DB)
+	userRepo := repository.NewUserRepository(database.DB)
+
 	lichessService := service.NewLichessService()
-	lichessHandler := handler.NewLichessHandler(lichessService)
+	gameService := service.NewGameService(gameRepo)
+	lichessHandler := handler.NewLichessHandler(lichessService, gameService, userRepo)
+	gameHandler := handler.NewGameHandler(gameService, userRepo)
 
 	engineService := service.NewEngineService()
 	engineHandler := handler.NewEngineHandler(engineService)
@@ -47,7 +53,8 @@ func main() {
 	protected := r.Group("/")
 	protected.Use(middleware.AuthMiddleware(jwtService))
 
-	protected.GET("/lichess/games/:username", lichessHandler.GetLichessGames)
+	protected.POST("/lichess/sync", lichessHandler.SyncGames)
+	protected.GET("/api/games", gameHandler.ListGames)
 	protected.POST("/api/analyze/position", engineHandler.AnalyzePosition)
 
 	r.Run(":8080")

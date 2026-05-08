@@ -1,6 +1,8 @@
 .game-container{
     display:flex;
     align-items:flex-start;
+    justify-content:center;
+    width:100%;
 }
 
 .board-side{
@@ -9,7 +11,7 @@
 }
 
 .board-wrapper{
-    width:520px;
+    width:600px;
 }
 
 .captured-row{

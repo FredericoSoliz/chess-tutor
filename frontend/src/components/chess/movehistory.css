@@ -1,6 +1,6 @@
 .history-panel{
     width:270px;
-    height:520px;
+    height:600px;
     display:flex;
     flex-direction:column;
     border-left:1px solid #d8d0c5;

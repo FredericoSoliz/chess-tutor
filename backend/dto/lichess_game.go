@@ -51,6 +51,7 @@ func ToGame(g LichessGame, userID uint) model.Game {
 		WhiteRating: g.Players.White.Rating,
 		BlackRating: g.Players.Black.Rating,
 		Winner:      g.Winner,
+		PlayedAt:    g.CreatedAt,
 		Data:        rawJSON,
 	}
 }
