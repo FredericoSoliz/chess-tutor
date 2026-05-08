@@ -6,7 +6,10 @@ type AnalyzePositionRequest struct {
 }
 
 type AnalyzePositionResponse struct {
-	FEN        string      `json:"fen"`
-	BestMove   string      `json:"best_move"`
-	Evaluation interface{} `json:"evaluation"`
+	FEN      string   `json:"fen"`
+	BestMove string   `json:"best_move"`
+	ScoreCP  *int     `json:"score_cp"`
+	Mate     *int     `json:"mate"`
+	PV       []string `json:"pv"`
+	Depth    int      `json:"depth"`
 }

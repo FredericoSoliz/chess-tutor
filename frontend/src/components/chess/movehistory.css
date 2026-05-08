@@ -1,5 +1,5 @@
 .history-panel{
-    width:270px;
+    width:340px;
     height:600px;
     display:flex;
     flex-direction:column;
@@ -8,31 +8,107 @@
 }
 
 .history-header{
-    height:52px;
     background:#4a2f21;
     color:#f5efe6;
+    padding:10px 14px;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+}
+
+.mh-matchup{
     display:flex;
     align-items:center;
-    padding:0 18px;
+    justify-content:space-between;
+    gap:8px;
+    font-size:13px;
+}
+
+.mh-side{
+    display:flex;
+    align-items:center;
+    gap:6px;
+}
+
+.mh-vs{
+    color:#d7c5b5;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    flex-shrink:0;
+}
+
+.mh-king{
+    font-size:18px;
+    line-height:1;
+}
+
+.mh-king-white{
+    color:#f5efe6;
+    text-shadow:0 0 1px #2e231c;
+}
+
+.mh-king-black{
+    color:#1a0f08;
+    text-shadow:0 0 1px #f5efe6;
+}
+
+.mh-name{
     font-weight:600;
-    font-size:16px;
+    white-space:nowrap;
+}
+
+.mh-rating{
+    color:#d7c5b5;
+    font-size:13px;
+    font-weight:500;
+}
+
+.mh-date{
+    font-size:12px;
+    color:#d7c5b5;
+    align-self:flex-end;
 }
 
 .captured-box{
-    min-height:42px;
+    min-height:38px;
     display:flex;
     align-items:center;
-    gap:12px;
-    padding:0 12px;
+    gap:10px;
+    padding:6px 14px;
     border-bottom:1px solid #dfd5c8;
     background:#e8dfd3;
-    font-size:22px;
+    font-size:13px;
     color:#2f241d;
 }
 
 .captured-box.bottom{
     border-top:1px solid #dfd5c8;
     border-bottom:none;
+    justify-content:space-between;
+}
+
+.mh-info-row{
+    flex-wrap:wrap;
+}
+
+.mh-opening{
+    color:#3a2a22;
+    font-weight:500;
+    font-size:13px;
+}
+
+.mh-speed{
+    text-transform:capitalize;
+    color:#5a4a3a;
+    font-size:13px;
+}
+
+.mh-score{
+    font-weight:700;
+    color:#2e231c;
+    font-size:14px;
+    letter-spacing:0.5px;
 }
 
 .history-list{
@@ -44,25 +120,31 @@
     display:grid;
     grid-template-columns:42px 1fr 1fr;
     align-items:center;
-    min-height:38px;
+    min-height:34px;
     border-bottom:1px solid #dfd5c8;
-    font-size:15px;
+    font-size:14px;
     color:#2f241d;
 }
 
 .move-number{
     text-align:center;
     color:#7c6a58;
-    font-size:14px;
+    font-size:13px;
 }
 
 .history-row span:nth-child(2),
 .history-row span:nth-child(3){
-    padding:0 12px;
+    padding:6px 12px;
 }
 
 .history-row span:nth-child(2):hover,
 .history-row span:nth-child(3):hover{
     background:#e1d6c8;
     cursor:pointer;
+}
+
+.active-move{
+    background:#4a2f21 !important;
+    color:#f5efe6 !important;
+    font-weight:600;
 }

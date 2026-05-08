@@ -10,6 +10,7 @@ type GameService interface {
 	GetLatestPlayedAt(userID uint) (int64, error)
 	InsertNewGames(games []model.Game) (int, error)
 	ListByUser(userID uint, lichessUsername string, q dto.GameListQuery) ([]model.Game, int64, error)
+	GetByIDForUser(id uint, userID uint) (*model.Game, error)
 }
 
 type gameService struct {
@@ -51,4 +52,8 @@ func (s *gameService) ListByUser(
 	q dto.GameListQuery,
 ) ([]model.Game, int64, error) {
 	return s.repo.ListByUser(userID, lichessUsername, q)
+}
+
+func (s *gameService) GetByIDForUser(id uint, userID uint) (*model.Game, error) {
+	return s.repo.FindByIDForUser(id, userID)
 }

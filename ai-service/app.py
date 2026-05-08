@@ -6,9 +6,6 @@ from engine.stockfish_service import StockfishService
 
 app = Flask(__name__)
 
-#ENGINE_PATH = r"C:\stockfish\stockfish.exe"
-
-
 ENGINE_PATH = os.getenv("STOCKFISH_PATH", "/usr/games/stockfish")
 
 print(f"Using Stockfish at: {ENGINE_PATH}")
@@ -16,7 +13,6 @@ print(f"Using Stockfish at: {ENGINE_PATH}")
 if not os.path.exists(ENGINE_PATH):
     raise Exception(f"Stockfish not found at {ENGINE_PATH}")
 
-#singleton to initiate engine
 stockfish = StockfishService(ENGINE_PATH)
 
 
@@ -41,7 +37,10 @@ def analyze():
         return jsonify({
             "fen": fen,
             "best_move": result["best_move"],
-            "evaluation": result["evaluation"]
+            "score_cp": result["score_cp"],
+            "mate": result["mate"],
+            "pv": result["pv"],
+            "depth": result["depth"],
         })
 
     except Exception as e:

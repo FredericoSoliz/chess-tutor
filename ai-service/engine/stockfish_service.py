@@ -1,3 +1,5 @@
+import threading
+
 import chess
 import chess.engine
 
@@ -5,31 +7,37 @@ import chess.engine
 class StockfishService:
     def __init__(self, engine_path: str):
         self.engine = chess.engine.SimpleEngine.popen_uci(engine_path)
+        self._lock = threading.Lock()
 
     def analyze_position(self, fen: str, depth: int = 15):
         board = chess.Board(fen)
 
-        info = self.engine.analyse(
-            board,
-            chess.engine.Limit(depth=depth)
-        )
+        with self._lock:
+            info = self.engine.analyse(
+                board,
+                chess.engine.Limit(depth=depth)
+            )
 
-        result = self.engine.play(
-            board,
-            chess.engine.Limit(depth=depth)
-        )
+        score = info["score"].white()
 
-        score = info["score"].relative
-        
-        #evaluation in centipawns
+        score_cp = None
+        mate = None
+
         if score.is_mate():
-            evaluation = f"mate {score.mate()}"
+            mate = score.mate()
         else:
-            evaluation = round(score.score() / 100, 2)
+            score_cp = score.score()
+
+        pv_moves = info.get("pv") or []
+        pv = [m.uci() for m in pv_moves]
+        best_move = pv[0] if pv else None
 
         return {
-            "best_move": str(result.move),
-            "evaluation": evaluation
+            "best_move": best_move,
+            "score_cp": score_cp,
+            "mate": mate,
+            "pv": pv,
+            "depth": info.get("depth", depth),
         }
 
     def close(self):

@@ -10,6 +10,7 @@ export default function ChessBoard({
                                        lastMove,
                                        orientation = "white",
                                        turn = "w",
+                                       arrows = [],
                                    }) {
     const [moveFrom, setMoveFrom] = useState("");
     const [optionSquares, setOptionSquares] = useState({});
@@ -127,6 +128,7 @@ export default function ChessBoard({
             ...lastMoveStyles,
             ...optionSquares,
         },
+        arrows,
         id: "main-board",
     };
 

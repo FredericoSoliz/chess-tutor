@@ -15,6 +15,7 @@ type GameRepository interface {
 	ExistsByLichessID(lichessID string) (bool, error)
 	Create(game *model.Game) error
 	ListByUser(userID uint, lichessUsername string, q dto.GameListQuery) ([]model.Game, int64, error)
+	FindByIDForUser(id uint, userID uint) (*model.Game, error)
 }
 
 type gameRepository struct {
@@ -56,6 +57,20 @@ func (r *gameRepository) ExistsByLichessID(lichessID string) (bool, error) {
 
 func (r *gameRepository) Create(game *model.Game) error {
 	return r.db.Create(game).Error
+}
+
+func (r *gameRepository) FindByIDForUser(id uint, userID uint) (*model.Game, error) {
+	var game model.Game
+
+	err := r.db.
+		Where("id = ? AND user_id = ?", id, userID).
+		First(&game).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &game, nil
 }
 
 func (r *gameRepository) ListByUser(

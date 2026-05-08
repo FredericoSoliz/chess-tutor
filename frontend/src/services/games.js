@@ -20,3 +20,17 @@ export async function syncLichessGames() {
     const { data } = await api.post("/lichess/sync");
     return data;
 }
+
+export async function getGame(id) {
+    const { data } = await api.get(`/api/games/${id}`);
+    return data;
+}
+
+export async function analyzePosition(fen, depth = 15, signal = null) {
+    const { data } = await api.post(
+        "/api/analyze/position",
+        { fen, depth },
+        { signal },
+    );
+    return data;
+}

@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
 import { listGames, syncLichessGames } from "../services/games";
 import "./gamespage.css";
@@ -18,6 +19,7 @@ function formatDate(ms) {
 }
 
 export default function GamesPage() {
+    const navigate = useNavigate();
     const [games, setGames] = useState([]);
     const [total, setTotal] = useState(0);
     const [loading, setLoading] = useState(false);
@@ -158,7 +160,11 @@ export default function GamesPage() {
                             games.map((g) => {
                                 const badge = RESULT_BADGE[g.user_result] || { label: "-", className: "" };
                                 return (
-                                    <tr key={g.id}>
+                                    <tr
+                                        key={g.id}
+                                        className="games-row-clickable"
+                                        onClick={() => navigate(`/analysis/${g.id}`)}
+                                    >
                                         <td>{formatDate(g.played_at)}</td>
                                         <td>
                                             <span className={`result-badge ${badge.className}`}>

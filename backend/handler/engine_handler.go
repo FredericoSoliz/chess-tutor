@@ -1,9 +1,10 @@
 package handler
 
 import (
+	"net/http"
+
 	"chess-tutor/dto"
 	"chess-tutor/service"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -22,12 +23,12 @@ func (h *EngineHandler) AnalyzePosition(c *gin.Context) {
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status":  http.StatusBadRequest,
-			"message": "Check request!",
+			"message": "Invalid request body",
 		})
 		return
 	}
 
-	if req.Depth == 0 {
+	if req.Depth <= 0 || req.Depth > 25 {
 		req.Depth = 15
 	}
 
@@ -35,13 +36,10 @@ func (h *EngineHandler) AnalyzePosition(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status":  http.StatusInternalServerError,
-			"message": err.Error(),
+			"message": "Failed to analyze position",
 		})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"status": http.StatusOK,
-		"data":   result,
-	})
+	c.JSON(http.StatusOK, result)
 }

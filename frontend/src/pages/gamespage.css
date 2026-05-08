@@ -117,6 +117,10 @@
     background: #faf5ec;
 }
 
+.games-row-clickable {
+    cursor: pointer;
+}
+
 .games-table tbody tr:last-child td {
     border-bottom: none;
 }

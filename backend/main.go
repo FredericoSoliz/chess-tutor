@@ -55,6 +55,7 @@ func main() {
 
 	protected.POST("/lichess/sync", lichessHandler.SyncGames)
 	protected.GET("/api/games", gameHandler.ListGames)
+	protected.GET("/api/games/:id", gameHandler.GetGame)
 	protected.POST("/api/analyze/position", engineHandler.AnalyzePosition)
 
 	r.Run(":8080")
