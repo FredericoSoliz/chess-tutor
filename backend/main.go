@@ -42,7 +42,7 @@ func main() {
 	engineService := service.NewEngineService()
 	engineHandler := handler.NewEngineHandler(engineService)
 
-	authService := service.NewAuthService()
+	authService := service.NewAuthService(userRepo)
 	jwtService := service.NewJWTService()
 
 	authHandler := handler.NewAuthHandler(authService, jwtService)
