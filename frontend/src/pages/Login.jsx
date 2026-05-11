@@ -14,7 +14,7 @@ export default function Login() {
     const [showPassword, setShowPassword] = useState(false);
 
     if (localStorage.getItem("token")) {
-        return <Navigate to="/analysis" replace />;
+        return <Navigate to="/dashboard" replace />;
     }
 
     const handleSubmit = async () => {
@@ -45,7 +45,7 @@ export default function Login() {
 
             if (isLogin) {
                 localStorage.setItem("token", res.data.token);
-                navigate("/analysis");
+                navigate("/dashboard");
             } else {
                 setIsLogin(true);
                 setUsername("");

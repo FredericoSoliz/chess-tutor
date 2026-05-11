@@ -42,6 +42,9 @@ func main() {
 	engineService := service.NewEngineService()
 	engineHandler := handler.NewEngineHandler(engineService, gameRepo, userRepo)
 
+	statsService := service.NewStatsService(gameRepo)
+	statsHandler := handler.NewStatsHandler(statsService, userRepo)
+
 	authService := service.NewAuthService(userRepo)
 	jwtService := service.NewJWTService()
 
@@ -58,6 +61,7 @@ func main() {
 	protected.GET("/api/games/:id", gameHandler.GetGame)
 	protected.POST("/api/analyze/position", engineHandler.AnalyzePosition)
 	protected.POST("/api/analyze/game/:id", engineHandler.AnalyzeGame)
+	protected.GET("/api/dashboard", statsHandler.GetDashboard)
 
 	r.Run(":8080")
 }

@@ -27,7 +27,7 @@ func (s *engineService) AnalyzePosition(req dto.AnalyzePositionRequest) (*dto.An
 		req.Depth = 15
 	}
 
-	url := os.Getenv("AI_SERVICE_URL")
+	url := os.Getenv("ENGINE_SERVICE_URL")
 	if url == "" {
 		url = "http://localhost:5000"
 	}
@@ -65,7 +65,7 @@ func (s *engineService) AnalyzeGame(pgn string, timePerMove float64) (*dto.GameA
 		timePerMove = 0.1
 	}
 
-	url := os.Getenv("AI_SERVICE_URL")
+	url := os.Getenv("ENGINE_SERVICE_URL")
 	if url == "" {
 		url = "http://localhost:5000"
 	}

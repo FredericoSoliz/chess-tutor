@@ -5,11 +5,12 @@ services:
       - "8080:8080"
     depends_on:
       - db
-      - ai-service
+      - engine-service
     env_file:
       - ./backend/.env
     environment:
       GIN_MODE: release
+      ENGINE_SERVICE_URL: http://engine-service:5000
 
   frontend:
     build: ./frontend
@@ -24,8 +25,8 @@ services:
       - VITE_API_URL=http://localhost:8080
       - CHOKIDAR_USEPOLLING=true
   
-  ai-service:
-    build: ./ai-service
+  engine-service:
+    build: ./engine-service
     ports:
       - "5000:5000"
     environment:
