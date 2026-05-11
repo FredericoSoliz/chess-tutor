@@ -6,9 +6,10 @@ import ChessBoard from "../components/chess/ChessBoard";
 import BoardControls from "../components/chess/BoardControls";
 import MoveHistory from "../components/chess/MoveHistory";
 import EvalBar from "../components/chess/EvalBar";
+import GameAnalysisStats from "../components/chess/GameAnalysisStats";
 import useChessGame from "../hooks/useChessGame";
 import useAnalysis from "../hooks/useAnalysis";
-import { getGame } from "../services/games";
+import { getGame, analyzeGame } from "../services/games";
 
 import "../components/chess/chessboard.css";
 
@@ -17,6 +18,10 @@ export default function AnalysisPage() {
     const [gameDetail, setGameDetail] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [moveAnalysis, setMoveAnalysis] = useState(null);
+    const [accuracy, setAccuracy] = useState(null); // {white, black}
+    const [analyzing, setAnalyzing] = useState(false);
+    const [analysisError, setAnalysisError] = useState("");
 
     useEffect(() => {
         if (!gameId) {
@@ -43,6 +48,31 @@ export default function AnalysisPage() {
             cancelled = true;
         };
     }, [gameId]);
+
+    // Reset move analysis when game changes
+    useEffect(() => {
+        setMoveAnalysis(null);
+        setAccuracy(null);
+        setAnalysisError("");
+    }, [gameId]);
+
+    async function handleAnalyzeGame() {
+        if (!gameId || analyzing) return;
+        setAnalyzing(true);
+        setAnalysisError("");
+        try {
+            const data = await analyzeGame(gameId, 0.1);
+            setMoveAnalysis(data.moves || []);
+            setAccuracy({
+                white: data.accuracy_white,
+                black: data.accuracy_black,
+            });
+        } catch (e) {
+            setAnalysisError("Analysis failed");
+        } finally {
+            setAnalyzing(false);
+        }
+    }
 
     const game = useChessGame(gameDetail?.pgn || null);
     const { analysis } = useAnalysis(game.position);
@@ -120,7 +150,19 @@ export default function AnalysisPage() {
                         currentPly={game.currentPly}
                         detail={gameDetail}
                         onJumpTo={gameDetail ? game.goToPly : null}
+                        moveAnalysis={moveAnalysis}
+                        onAnalyzeGame={gameId ? handleAnalyzeGame : null}
+                        analyzing={analyzing}
+                        analysisError={analysisError}
                     />
+
+                    {moveAnalysis && moveAnalysis.length > 0 && (
+                        <GameAnalysisStats
+                            moveAnalysis={moveAnalysis}
+                            accuracy={accuracy}
+                            detail={gameDetail}
+                        />
+                    )}
                 </div>
             </div>
         </Layout>

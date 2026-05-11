@@ -7,10 +7,12 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 )
 
 type EngineService interface {
 	AnalyzePosition(req dto.AnalyzePositionRequest) (*dto.AnalyzePositionResponse, error)
+	AnalyzeGame(pgn string, timePerMove float64) (*dto.GameAnalysisResponse, error)
 }
 
 type engineService struct {
@@ -56,4 +58,47 @@ func (s *engineService) AnalyzePosition(req dto.AnalyzePositionRequest) (*dto.An
 	}
 
 	return &response, nil
+}
+
+func (s *engineService) AnalyzeGame(pgn string, timePerMove float64) (*dto.GameAnalysisResponse, error) {
+	if timePerMove <= 0 {
+		timePerMove = 0.1
+	}
+
+	url := os.Getenv("AI_SERVICE_URL")
+	if url == "" {
+		url = "http://localhost:5000"
+	}
+
+	reqBody := dto.AnalyzeGameRequest{
+		PGN:         pgn,
+		TimePerMove: timePerMove,
+	}
+
+	body, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, err
+	}
+
+	client := &http.Client{Timeout: 5 * time.Minute}
+	resp, err := client.Post(
+		url+"/analyze/pgn",
+		"application/json",
+		bytes.NewBuffer(body),
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("AI service returned status %d", resp.StatusCode)
+	}
+
+	var aiResp dto.GameAnalysisResponse
+	if err := json.NewDecoder(resp.Body).Decode(&aiResp); err != nil {
+		return nil, err
+	}
+
+	return &aiResp, nil
 }

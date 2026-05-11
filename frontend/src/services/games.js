@@ -34,3 +34,12 @@ export async function analyzePosition(fen, depth = 15, signal = null) {
     );
     return data;
 }
+
+export async function analyzeGame(gameId, timePerMove = 0.1) {
+    const { data } = await api.post(
+        `/api/analyze/game/${gameId}`,
+        { time_per_move: timePerMove },
+        { timeout: 5 * 60 * 1000 },
+    );
+    return data;
+}

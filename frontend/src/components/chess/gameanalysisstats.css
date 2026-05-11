@@ -1,0 +1,136 @@
+.stats-panel{
+    width:280px;
+    height:600px;
+    background:#ece4d8;
+    border-left:1px solid #d8d0c5;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+}
+
+.stats-header{
+    background:#4a2f21;
+    color:#f5efe6;
+    padding:10px 14px;
+    font-weight:600;
+    font-size:13px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:6px;
+}
+
+.stats-header-side{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    min-width:0;
+}
+
+.stats-header-name{
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+
+.stats-header-vs{
+    color:#d7c5b5;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    flex-shrink:0;
+}
+
+.stats-table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:13px;
+    color:#2f241d;
+    table-layout:fixed;
+}
+
+.stats-table th,
+.stats-table td{
+    padding:8px 10px;
+    border-bottom:1px solid #dfd5c8;
+    text-align:center;
+}
+
+.stats-table th:first-child,
+.stats-table td:first-child{
+    text-align:left;
+    color:#5a4a3a;
+    font-weight:500;
+}
+
+.stats-side{
+    background:#e8dfd3;
+    font-size:12px;
+    font-weight:600;
+    color:#3a2a22;
+}
+
+.stats-side .mh-king{
+    margin-right:4px;
+}
+
+.stats-name{
+    display:inline-block;
+    max-width:90px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    vertical-align:middle;
+}
+
+.stats-accuracy-row td{
+    font-weight:700;
+    font-size:15px;
+    color:#1a7a3a;
+}
+
+.stats-accuracy-row td:first-child{
+    color:#3a2a22;
+    font-size:13px;
+    font-weight:500;
+}
+
+.stats-cat-label{
+    display:flex;
+    align-items:center;
+    gap:6px;
+}
+
+.stats-sym{
+    font-weight:700;
+    font-size:13px;
+    min-width:18px;
+    text-align:center;
+}
+
+.stats-sym-best{ color:#1a7a3a; }
+.stats-sym-excellent{ color:#3a9a4a; }
+.stats-sym-inaccuracy{ color:#c69312; }
+.stats-sym-mistake{ color:#d97328; }
+.stats-sym-blunder{ color:#b6261d; }
+
+.stats-row-blunder td:not(:first-child){
+    color:#b6261d;
+    font-weight:600;
+}
+.stats-row-mistake td:not(:first-child){
+    color:#d97328;
+    font-weight:600;
+}
+.stats-row-best td:not(:first-child){
+    color:#1a7a3a;
+    font-weight:600;
+}
+
+.stats-acpl-row td{
+    background:#e8dfd3;
+    font-weight:600;
+}
+.stats-acpl-row td:first-child{
+    font-weight:500;
+}
