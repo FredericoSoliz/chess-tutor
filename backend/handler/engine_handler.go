@@ -100,3 +100,23 @@ func (h *EngineHandler) AnalyzeGame(c *gin.Context) {
 	result.GameID = idParam
 	c.JSON(http.StatusOK, result)
 }
+
+func (h *EngineHandler) AnalyzePgn(c *gin.Context) {
+	var req struct {
+		PGN         string  `json:"pgn" binding:"required"`
+		TimePerMove float64 `json:"time_per_move"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "PGN is required"})
+		return
+	}
+
+	result, err := h.service.AnalyzeGame(req.PGN, req.TimePerMove)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Analysis failed"})
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}

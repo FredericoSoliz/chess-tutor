@@ -172,5 +172,6 @@ export default function useChessGame(initialPgn = null) {
         turn,
         currentPly,
         goToPly,
+        loadPgn,
     };
 }

@@ -61,6 +61,7 @@ func main() {
 	protected.GET("/api/games/:id", gameHandler.GetGame)
 	protected.POST("/api/analyze/position", engineHandler.AnalyzePosition)
 	protected.POST("/api/analyze/game/:id", engineHandler.AnalyzeGame)
+	protected.POST("/api/analyze/pgn", engineHandler.AnalyzePgn)
 	protected.GET("/api/dashboard", statsHandler.GetDashboard)
 
 	r.Run(":8080")

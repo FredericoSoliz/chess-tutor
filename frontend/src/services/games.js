@@ -43,3 +43,12 @@ export async function analyzeGame(gameId, timePerMove = 0.1) {
     );
     return data;
 }
+
+export async function analyzePgn(pgn, timePerMove = 0.1) {
+    const { data } = await api.post(
+        "/api/analyze/pgn",
+        { pgn, time_per_move: timePerMove },
+        { timeout: 5 * 60 * 1000 },
+    );
+    return data;
+}
