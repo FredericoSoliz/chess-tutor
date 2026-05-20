@@ -11,6 +11,7 @@ type UserRepository interface {
 	FindByID(id uint) (*model.User, error)
 	Create(user *model.User) error
 	UsernameExists(username string) (bool, error)
+	UpdateFields(userID uint, fields map[string]interface{}) error
 }
 
 type userRepository struct {
@@ -43,6 +44,13 @@ func (r *userRepository) FindByID(id uint) (*model.User, error) {
 
 func (r *userRepository) Create(user *model.User) error {
 	return r.db.Create(user).Error
+}
+
+func (r *userRepository) UpdateFields(userID uint, fields map[string]interface{}) error {
+	if len(fields) == 0 {
+		return nil
+	}
+	return r.db.Model(&model.User{}).Where("id = ?", userID).Updates(fields).Error
 }
 
 func (r *userRepository) UsernameExists(username string) (bool, error) {

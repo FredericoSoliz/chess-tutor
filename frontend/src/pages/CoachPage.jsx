@@ -5,7 +5,9 @@ import Layout from "../components/Layout";
 import ChessBoard from "../components/chess/ChessBoard";
 import BoardControls from "../components/chess/BoardControls";
 import EvalBar from "../components/chess/EvalBar";
+import useAnalysis from "../hooks/useAnalysis";
 import { coachMove } from "../services/coach";
+import { getProfile } from "../services/profile";
 
 import "../components/chess/chessboard.css";
 import "./coachpage.css";
@@ -36,14 +38,6 @@ function parseUci(uci) {
     };
 }
 
-function buildEvalFromCoachResp(userMove) {
-    if (!userMove) return null;
-    return {
-        score_cp: userMove.score_cp ?? null,
-        mate: userMove.mate ?? null,
-    };
-}
-
 export default function CoachPage() {
     const startFen = useMemo(() => new Chess().fen(), []);
     const [chess] = useState(() => new Chess());
@@ -53,10 +47,11 @@ export default function CoachPage() {
 
     const [elo, setElo] = useState(1700);
     const [difficultyKey, setDifficultyKey] = useState("medium");
+    const [userColor, setUserColor] = useState("w");
 
     const [thinking, setThinking] = useState(false);
     const [chatLog, setChatLog] = useState([]);
-    const [analysisEval, setAnalysisEval] = useState(null);
+    const [coachOnline, setCoachOnline] = useState(true);
     const [gameOver, setGameOver] = useState(false);
     const [resultText, setResultText] = useState("");
     const [error, setError] = useState("");
@@ -70,23 +65,76 @@ export default function CoachPage() {
     const currentDifficulty = DIFFICULTIES.find((d) => d.key === difficultyKey);
     const history = moveStack.map((m) => m.san);
 
-    function resetGame(nextElo = elo) {
+    const { analysis } = useAnalysis(position);
+
+    function applyMoveLocal(moveOpts) {
+        const fenBefore = chess.fen();
+        const m = chess.move(moveOpts);
+        if (!m) return null;
+        const fenAfter = chess.fen();
+
+        setFenStack((prev) => {
+            const next = [...prev, fenAfter];
+            setViewPly(next.length - 1);
+            return next;
+        });
+        setMoveStack((prev) => [
+            ...prev,
+            { san: m.san, from: m.from, to: m.to },
+        ]);
+
+        return { move: m, fenBefore, fenAfter };
+    }
+
+    async function kickOffBotOpening(useElo) {
+        setThinking(true);
+        try {
+            const res = await coachMove({
+                fenAfter: chess.fen(),
+                elo: useElo,
+            });
+            if (res.bot_move?.uci) {
+                const botParsed = parseUci(res.bot_move.uci);
+                if (botParsed) applyMoveLocal(botParsed);
+            }
+            if (res.game_over) {
+                setGameOver(true);
+                setResultText(res.result || "Game over");
+            }
+        } catch (e) {
+            setError("Bot move failed");
+        } finally {
+            setThinking(false);
+        }
+    }
+
+    function resetGame(nextElo = elo, nextColor = userColor) {
         chess.reset();
         setFenStack([chess.fen()]);
         setMoveStack([]);
         setViewPly(0);
         setChatLog([]);
-        setAnalysisEval(null);
+        setCoachOnline(true);
         setGameOver(false);
         setResultText("");
         setError("");
         setThinking(false);
         if (nextElo !== elo) setElo(nextElo);
+        if (nextColor !== userColor) setUserColor(nextColor);
+
+        if (nextColor === "b") {
+            kickOffBotOpening(nextElo);
+        }
     }
 
     function pickDifficulty(d) {
         setDifficultyKey(d.key);
-        resetGame(d.elo);
+        resetGame(d.elo, userColor);
+    }
+
+    function pickColor(color) {
+        if (color === userColor) return;
+        resetGame(elo, color);
     }
 
     function goPrev() {
@@ -111,29 +159,9 @@ export default function CoachPage() {
         setMoveStack((prev) => prev.slice(0, -toUndo));
         setChatLog((prev) => prev.slice(0, -1));
         setViewPly((prev) => Math.min(prev, plies - toUndo));
-        setAnalysisEval(null);
         setGameOver(false);
         setResultText("");
         setError("");
-    }
-
-    function applyMoveLocal(moveOpts) {
-        const fenBefore = chess.fen();
-        const m = chess.move(moveOpts);
-        if (!m) return null;
-        const fenAfter = chess.fen();
-
-        setFenStack((prev) => {
-            const next = [...prev, fenAfter];
-            setViewPly(next.length - 1);
-            return next;
-        });
-        setMoveStack((prev) => [
-            ...prev,
-            { san: m.san, from: m.from, to: m.to },
-        ]);
-
-        return { move: m, fenBefore, fenAfter };
     }
 
     function getMoves(square) {
@@ -142,7 +170,7 @@ export default function CoachPage() {
     }
 
     function isUserTurnNow() {
-        return chess.turn() === "w";
+        return chess.turn() === userColor;
     }
 
     async function handleUserMove({ from, to, promotion = "q" }) {
@@ -166,7 +194,7 @@ export default function CoachPage() {
                 history: [...history, applied.move.san],
             });
 
-            setAnalysisEval(buildEvalFromCoachResp(res.user_move));
+            setCoachOnline(!!res.coach_message);
 
             setChatLog((prev) => [
                 ...prev,
@@ -220,6 +248,26 @@ export default function CoachPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [fenStack.length]);
 
+    useEffect(() => {
+        let cancelled = false;
+
+        getProfile()
+            .then((p) => {
+                if (cancelled) return;
+                const key = p.default_coach_difficulty;
+                const d = DIFFICULTIES.find((x) => x.key === key);
+                if (d && d.key !== difficultyKey) {
+                    setDifficultyKey(d.key);
+                    setElo(d.elo);
+                }
+            })
+            .catch(() => {});
+        return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    const boardOrientation = userColor === "w" ? "white" : "black";
+
     return (
         <Layout>
             <div className="coach-page">
@@ -237,10 +285,29 @@ export default function CoachPage() {
                             </button>
                         ))}
                     </div>
+
+                    <div className="coach-color-picker">
+                        <button
+                            className={`coach-color-btn${userColor === "w" ? " active" : ""}`}
+                            onClick={() => pickColor("w")}
+                            disabled={thinking}
+                            title="Play as white"
+                        >
+                            ♔
+                        </button>
+                        <button
+                            className={`coach-color-btn${userColor === "b" ? " active" : ""}`}
+                            onClick={() => pickColor("b")}
+                            disabled={thinking}
+                            title="Play as black"
+                        >
+                            ♚
+                        </button>
+                    </div>
                 </div>
 
                 <div className="game-container">
-                    <EvalBar analysis={analysisEval} />
+                    <EvalBar analysis={analysis} />
 
                     <div className="board-side">
                         <ChessBoard
@@ -248,7 +315,7 @@ export default function CoachPage() {
                             onMove={handleUserMove}
                             getMoves={getMoves}
                             lastMove={lastMove}
-                            orientation="white"
+                            orientation={boardOrientation}
                             turn={turn}
                         />
 
@@ -256,12 +323,18 @@ export default function CoachPage() {
                             onUndo={goPrev}
                             onRedo={goNext}
                             onReset={() => resetGame()}
-                            onFlip={() => {}}
                         />
                     </div>
 
                     <div className="coach-panel">
-                        <div className="coach-panel-header">Coach</div>
+                        <div className="coach-panel-header">
+                            <span>Coach</span>
+                            {!coachOnline && (
+                                <span className="coach-offline-pill">
+                                    <span className="coach-offline-dot" /> offline
+                                </span>
+                            )}
+                        </div>
 
                         <div className="coach-panel-body">
                             <div className="coach-diff-pill">
@@ -305,7 +378,9 @@ export default function CoachPage() {
                             <div className="coach-history-list">
                                 {history.length === 0 ? (
                                     <span className="coach-history-empty">
-                                        Make your first move to start.
+                                        {userColor === "w"
+                                            ? "Make your first move to start."
+                                            : "Coach is opening for white…"}
                                     </span>
                                 ) : (
                                     history.map((san, i) => {

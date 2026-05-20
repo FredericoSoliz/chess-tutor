@@ -13,6 +13,7 @@
     display:flex;
     align-items:center;
     gap:14px;
+    flex-wrap:wrap;
 }
 
 .coach-difficulty{
@@ -22,6 +23,42 @@
     border:1px solid #d8d0c5;
     padding:4px;
     border-radius:6px;
+}
+
+.coach-color-picker{
+    display:flex;
+    gap:4px;
+    background:#ece4d8;
+    border:1px solid #d8d0c5;
+    padding:4px;
+    border-radius:6px;
+}
+
+.coach-color-btn{
+    width:42px;
+    height:38px;
+    background:transparent;
+    border:none;
+    color:#3a2a22;
+    font-size:24px;
+    line-height:1;
+    cursor:pointer;
+    border-radius:4px;
+    transition:background 0.12s;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+.coach-color-btn:hover:not(.active):not(:disabled){
+    background:#dfd5c8;
+}
+.coach-color-btn.active{
+    background:#4a2f21;
+    color:#f5efe6;
+}
+.coach-color-btn:disabled{
+    opacity:0.5;
+    cursor:not-allowed;
 }
 
 .coach-diff-btn{
@@ -76,6 +113,30 @@
     font-size:13px;
     letter-spacing:0.5px;
     text-transform:uppercase;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+
+.coach-offline-pill{
+    background:rgba(182, 38, 29, 0.85);
+    color:#fff;
+    font-size:10px;
+    font-weight:600;
+    text-transform:lowercase;
+    letter-spacing:0.3px;
+    padding:2px 8px 2px 6px;
+    border-radius:10px;
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+}
+.coach-offline-dot{
+    width:6px;
+    height:6px;
+    background:#ffb8b3;
+    border-radius:50%;
+    display:inline-block;
 }
 
 .coach-panel-body{

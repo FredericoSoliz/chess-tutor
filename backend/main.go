@@ -19,7 +19,7 @@ func main() {
 
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:5173"},
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
@@ -47,6 +47,9 @@ func main() {
 
 	coachHandler := handler.NewCoachHandler(engineService)
 
+	profileService := service.NewProfileService(userRepo, gameRepo)
+	profileHandler := handler.NewProfileHandler(profileService, userRepo)
+
 	authService := service.NewAuthService(userRepo)
 	jwtService := service.NewJWTService()
 
@@ -66,6 +69,9 @@ func main() {
 	protected.POST("/api/analyze/pgn", engineHandler.AnalyzePgn)
 	protected.GET("/api/dashboard", statsHandler.GetDashboard)
 	protected.POST("/api/coach/move", coachHandler.Move)
+	protected.GET("/api/profile", profileHandler.Get)
+	protected.PATCH("/api/profile", profileHandler.Update)
+	protected.POST("/api/profile/password", profileHandler.ChangePassword)
 
 	r.Run(":8080")
 }

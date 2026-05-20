@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"time"
 
 	"chess-tutor/dto"
 	"chess-tutor/repository"
@@ -63,6 +64,10 @@ func (h *LichessHandler) SyncGames(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"status": http.StatusInternalServerError, "message": "Failed to store games"})
 		return
 	}
+
+	_ = h.userRepo.UpdateFields(user.ID, map[string]interface{}{
+		"last_synced_at": time.Now().UnixMilli(),
+	})
 
 	c.JSON(http.StatusOK, gin.H{
 		"status":   http.StatusOK,

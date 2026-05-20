@@ -37,3 +37,4 @@ func (h *CoachHandler) Move(c *gin.Context) {
 
 	c.JSON(http.StatusOK, result)
 }
+
