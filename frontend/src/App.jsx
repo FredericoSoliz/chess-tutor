@@ -3,6 +3,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import AnalysisPage from "./pages/AnalysisPage";
 import GamesPage from "./pages/GamesPage";
+import CoachPage from "./pages/CoachPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -39,6 +40,14 @@ function App() {
                     element={
                         <ProtectedRoute>
                             <GamesPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/coach"
+                    element={
+                        <ProtectedRoute>
+                            <CoachPage />
                         </ProtectedRoute>
                     }
                 />

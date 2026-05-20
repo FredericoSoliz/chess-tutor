@@ -70,5 +70,35 @@ class StockfishService:
             "depth": info.get("depth", 0),
         }
 
+    def play_at_strength(self, fen: str, elo: int, time_limit: float = 1.0):
+        board = chess.Board(fen)
+
+        with self._lock:
+            try:
+                if elo >= 1320:
+                    self.engine.configure({
+                        "UCI_LimitStrength": True,
+                        "UCI_Elo": int(elo),
+                    })
+                else:
+                    skill = max(0, min(8, int((elo - 500) / 100)))
+                    self.engine.configure({
+                        "UCI_LimitStrength": False,
+                        "Skill Level": skill,
+                    })
+
+                result = self.engine.play(
+                    board,
+                    chess.engine.Limit(time=time_limit),
+                )
+            finally:
+                self.engine.configure({
+                    "UCI_LimitStrength": False,
+                    "Skill Level": 20,
+                })
+
+        move = result.move
+        return {"uci": move.uci() if move else None}
+
     def close(self):
         self.engine.quit()

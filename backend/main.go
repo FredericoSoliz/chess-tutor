@@ -45,6 +45,8 @@ func main() {
 	statsService := service.NewStatsService(gameRepo)
 	statsHandler := handler.NewStatsHandler(statsService, userRepo)
 
+	coachHandler := handler.NewCoachHandler(engineService)
+
 	authService := service.NewAuthService(userRepo)
 	jwtService := service.NewJWTService()
 
@@ -63,6 +65,7 @@ func main() {
 	protected.POST("/api/analyze/game/:id", engineHandler.AnalyzeGame)
 	protected.POST("/api/analyze/pgn", engineHandler.AnalyzePgn)
 	protected.GET("/api/dashboard", statsHandler.GetDashboard)
+	protected.POST("/api/coach/move", coachHandler.Move)
 
 	r.Run(":8080")
 }

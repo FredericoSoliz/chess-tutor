@@ -31,6 +31,12 @@ services:
       - "5000:5000"
     environment:
       - STOCKFISH_PATH=/usr/games/stockfish
+      - LLM_BASE_URL=http://host.docker.internal:1234/v1
+      - LLM_MODEL=qwen2.5-7b-instruct
+      - LLM_API_KEY=lm-studio
+      - LLM_TIMEOUT=15
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
       
   db:
     image: postgres:15

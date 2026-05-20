@@ -13,6 +13,7 @@ import (
 type EngineService interface {
 	AnalyzePosition(req dto.AnalyzePositionRequest) (*dto.AnalyzePositionResponse, error)
 	AnalyzeGame(pgn string, timePerMove float64) (*dto.GameAnalysisResponse, error)
+	CoachMove(req dto.CoachMoveRequest) (*dto.CoachMoveResponse, error)
 }
 
 type engineService struct {
@@ -101,4 +102,37 @@ func (s *engineService) AnalyzeGame(pgn string, timePerMove float64) (*dto.GameA
 	}
 
 	return &aiResp, nil
+}
+
+func (s *engineService) CoachMove(req dto.CoachMoveRequest) (*dto.CoachMoveResponse, error) {
+	url := os.Getenv("ENGINE_SERVICE_URL")
+	if url == "" {
+		url = "http://localhost:5000"
+	}
+
+	body, err := json.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := http.Post(
+		url+"/play/coach-move",
+		"application/json",
+		bytes.NewBuffer(body),
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("engine service returned status %d", resp.StatusCode)
+	}
+
+	var out dto.CoachMoveResponse
+	if err := json.NewDecoder(resp.Body).Decode(&out); err != nil {
+		return nil, err
+	}
+
+	return &out, nil
 }

@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 import atexit
+import concurrent.futures
 import io
 import math
 import os
@@ -8,6 +9,8 @@ import statistics
 import chess
 import chess.pgn
 from engine.stockfish_service import StockfishService
+from coach import llm_client
+from coach.prompt import SYSTEM_PROMPT, build_coach_prompt
 
 app = Flask(__name__)
 
@@ -53,7 +56,6 @@ def analyze():
 
 
 def _cp_loss(eval_before, eval_after, turn, mate_before, mate_after):
-    """Centipawn loss from the perspective of the player who just moved (>= 0)."""
     if mate_before is not None:
         if turn == "w" and mate_before > 0:
             if mate_after is None or mate_after <= 0:
@@ -90,10 +92,6 @@ def _move_accuracy(win_before, win_after):
 
 
 def _game_accuracy(per_move_accuracies, win_percents):
-    """
-    Weighted mean of per-move accuracies, weighted by local win% volatility
-    (Lichess approach). win_percents has one extra entry (final position).
-    """
     if not per_move_accuracies:
         return None
 
@@ -236,6 +234,110 @@ def analyze_pgn():
             "moves": moves,
             "accuracy_white": accuracy_white,
             "accuracy_black": accuracy_black,
+        })
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/play/coach-move", methods=["POST"])
+def coach_move():
+    data = request.get_json()
+
+    if not data:
+        return jsonify({"error": "missing body"}), 400
+
+    fen_before = data.get("fen_before")
+    user_move_uci = data.get("user_move")
+    fen_after = data.get("fen_after")
+    elo = int(data.get("elo", 1700))
+    history_san = data.get("history") or []
+
+    if not fen_before or not user_move_uci or not fen_after:
+        return jsonify({"error": "fen_before, user_move and fen_after required"}), 400
+
+    try:
+        eval_before = stockfish.analyze_position_timed(fen_before, 0.1)
+        eval_after = stockfish.analyze_position_timed(fen_after, 0.1)
+
+        board_before = chess.Board(fen_before)
+        turn = "w" if board_before.turn == chess.WHITE else "b"
+        cp_loss = _cp_loss(
+            eval_before["score_cp"], eval_after["score_cp"],
+            turn,
+            eval_before["mate"], eval_after["mate"],
+        )
+        category = _categorize(cp_loss, user_move_uci, eval_before["best_move"])
+
+        user_payload = {
+            "uci": user_move_uci,
+            "category": category,
+            "cp_loss": cp_loss,
+            "best_move": eval_before["best_move"],
+            "score_cp": eval_after["score_cp"],
+            "mate": eval_after["mate"],
+        }
+
+        board_after = chess.Board(fen_after)
+        user_ended_game = board_after.is_game_over()
+
+        coach_prompt = build_coach_prompt(
+            fen_before=fen_before,
+            user_move_uci=user_move_uci,
+            history_san=history_san,
+            category=category,
+            cp_loss=cp_loss,
+            score_cp_before=eval_before["score_cp"],
+            score_cp_after=eval_after["score_cp"],
+            mate_before=eval_before["mate"],
+            mate_after=eval_after["mate"],
+            best_move_uci=eval_before["best_move"],
+            elo=elo,
+            game_over=user_ended_game,
+            result=(board_after.outcome().result() if user_ended_game and board_after.outcome() else None),
+        )
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+            llm_future = pool.submit(
+                llm_client.chat,
+                [
+                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "user", "content": coach_prompt},
+                ],
+            )
+
+            if user_ended_game:
+                bot_uci = None
+                fen_after_bot = fen_after
+                game_over = True
+                outcome = board_after.outcome()
+                result_str = outcome.result() if outcome else None
+            else:
+                bot_result = stockfish.play_at_strength(fen_after, elo)
+                bot_uci = bot_result["uci"]
+
+                fen_after_bot = fen_after
+                game_over = False
+                result_str = None
+
+                if bot_uci:
+                    board_after.push(chess.Move.from_uci(bot_uci))
+                    fen_after_bot = board_after.fen()
+                    if board_after.is_game_over():
+                        game_over = True
+                        outcome = board_after.outcome()
+                        if outcome:
+                            result_str = outcome.result()
+
+            coach_message = llm_future.result()
+
+        return jsonify({
+            "user_move": user_payload,
+            "bot_move": {"uci": bot_uci} if bot_uci else None,
+            "fen_after_bot": fen_after_bot,
+            "game_over": game_over,
+            "result": result_str,
+            "coach_message": coach_message,
         })
 
     except Exception as e:
