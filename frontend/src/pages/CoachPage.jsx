@@ -186,12 +186,19 @@ export default function CoachPage() {
         setThinking(true);
         setError("");
         try {
+            const recentUserMoves = chatLog.slice(-3).map((entry) => ({
+                san: entry.moveSan,
+                category: entry.feedback?.category || "good",
+                cp_loss: entry.feedback?.cp_loss || 0,
+            }));
+
             const res = await coachMove({
                 fenBefore: applied.fenBefore,
                 userMove: userUci,
                 fenAfter: applied.fenAfter,
                 elo,
                 history: [...history, applied.move.san],
+                recentUserMoves,
             });
 
             setCoachOnline(!!res.coach_message);

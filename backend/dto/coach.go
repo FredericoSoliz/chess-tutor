@@ -1,11 +1,18 @@
 package dto
 
 type CoachMoveRequest struct {
-	FenBefore string   `json:"fen_before"`
-	UserMove  string   `json:"user_move"`
-	FenAfter  string   `json:"fen_after" binding:"required"`
-	Elo       int      `json:"elo"`
-	History   []string `json:"history"`
+	FenBefore        string             `json:"fen_before"`
+	UserMove         string             `json:"user_move"`
+	FenAfter         string             `json:"fen_after" binding:"required"`
+	Elo              int                `json:"elo"`
+	History          []string           `json:"history"`
+	RecentUserMoves  []RecentUserMove   `json:"recent_user_moves"`
+}
+
+type RecentUserMove struct {
+	San      string `json:"san"`
+	Category string `json:"category"`
+	CpLoss   int    `json:"cp_loss"`
 }
 
 type CoachUserMove struct {

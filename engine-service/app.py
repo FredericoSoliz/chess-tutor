@@ -10,6 +10,7 @@ import chess
 import chess.pgn
 from engine.stockfish_service import StockfishService
 from coach import llm_client
+from coach import openings as openings_lookup
 from coach.prompt import SYSTEM_PROMPT, build_coach_prompt
 
 app = Flask(__name__)
@@ -252,6 +253,7 @@ def coach_move():
     fen_after = data.get("fen_after")
     elo = int(data.get("elo", 1700))
     history_san = data.get("history") or []
+    recent_user_moves = data.get("recent_user_moves") or []
 
     if not fen_after:
         return jsonify({"error": "fen_after required"}), 400
@@ -288,10 +290,15 @@ def coach_move():
         user_ended_game = board_after.is_game_over()
 
         if has_user_move:
+            opening_match = openings_lookup.lookup_best([fen_before, fen_after])
+            opening_eco = opening_match[0] if opening_match else None
+            opening_name = opening_match[1] if opening_match else None
+
             coach_prompt = build_coach_prompt(
                 fen_before=fen_before,
                 user_move_uci=user_move_uci,
                 history_san=history_san,
+                recent_user_moves=recent_user_moves,
                 category=user_payload["category"],
                 cp_loss=user_payload["cp_loss"],
                 score_cp_before=eval_before["score_cp"],
@@ -302,6 +309,8 @@ def coach_move():
                 elo=elo,
                 game_over=user_ended_game,
                 result=(board_after.outcome().result() if user_ended_game and board_after.outcome() else None),
+                opening_eco=opening_eco,
+                opening_name=opening_name,
             )
 
         coach_message = None

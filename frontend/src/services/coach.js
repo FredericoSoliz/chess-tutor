@@ -1,6 +1,13 @@
 import api from "./api";
 
-export async function coachMove({ fenBefore, userMove, fenAfter, elo, history = [] }) {
+export async function coachMove({
+    fenBefore,
+    userMove,
+    fenAfter,
+    elo,
+    history = [],
+    recentUserMoves = [],
+}) {
     const { data } = await api.post(
         "/api/coach/move",
         {
@@ -9,6 +16,7 @@ export async function coachMove({ fenBefore, userMove, fenAfter, elo, history = 
             fen_after: fenAfter,
             elo,
             history,
+            recent_user_moves: recentUserMoves,
         },
         { timeout: 30 * 1000 },
     );
