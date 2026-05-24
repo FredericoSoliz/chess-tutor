@@ -6,6 +6,8 @@ import (
 	"chess-tutor/middleware"
 	"chess-tutor/repository"
 	"chess-tutor/service"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -17,8 +19,16 @@ func main() {
 
 	r := gin.Default()
 
+	allowedOrigins := []string{"http://localhost:5173"}
+	if raw := os.Getenv("CORS_ALLOWED_ORIGINS"); raw != "" {
+		allowedOrigins = strings.Split(raw, ",")
+		for i, o := range allowedOrigins {
+			allowedOrigins[i] = strings.TrimSpace(o)
+		}
+	}
+
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173"},
+		AllowOrigins:     allowedOrigins,
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		AllowCredentials: true,
@@ -73,5 +83,9 @@ func main() {
 	protected.PATCH("/api/profile", profileHandler.Update)
 	protected.POST("/api/profile/password", profileHandler.ChangePassword)
 
-	r.Run(":8080")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	r.Run(":" + port)
 }

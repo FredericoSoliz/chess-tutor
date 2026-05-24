@@ -99,7 +99,6 @@ def _game_accuracy(per_move_accuracies, win_percents):
     weights = []
     n = len(per_move_accuracies)
     for i in range(n):
-        # Window of 2 positions around move i (in win_percents space)
         start = max(0, i - 2)
         end = min(len(win_percents), i + 3)
         window = win_percents[start:end]
@@ -372,4 +371,6 @@ atexit.register(shutdown)
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    port = int(os.getenv("PORT", "5000"))
+    debug = os.getenv("FLASK_DEBUG", "false").lower() == "true"
+    app.run(host="0.0.0.0", port=port, debug=debug)
