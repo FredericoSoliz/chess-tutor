@@ -1,19 +1,3 @@
-"""
-Provider-agnostic LLM client.
-
-Speaks the OpenAI Chat Completions protocol so it works with:
-- LM Studio (local)
-- Ollama (local, OpenAI-compatible endpoint)
-- Groq (cloud, free tier)
-- OpenAI / Anthropic-compatible endpoints
-
-Configuration via environment variables:
-    LLM_BASE_URL   default http://host.docker.internal:1234/v1
-    LLM_MODEL      default qwen2.5-7b-instruct
-    LLM_API_KEY    default lm-studio (LM Studio ignores it but the field is required)
-    LLM_TIMEOUT    default 15 (seconds)
-"""
-
 import logging
 import os
 from typing import List, Dict, Optional
@@ -28,35 +12,32 @@ LLM_API_KEY = os.getenv("LLM_API_KEY", "lm-studio")
 LLM_TIMEOUT = float(os.getenv("LLM_TIMEOUT", "15"))
 LLM_PROXY = os.getenv("LLM_PROXY")
 
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
+GROQ_BASE_URL = "https://api.groq.com/openai/v1"
+GROQ_TIMEOUT = float(os.getenv("GROQ_TIMEOUT", "10"))
 
-def chat(
-    messages: List[Dict[str, str]],
-    max_tokens: int = 180,
-    temperature: float = 0.7,
-) -> Optional[str]:
+
+def _call(base_url, model, api_key, messages, max_tokens, temperature, timeout, proxy):
     try:
         response = requests.post(
-            f"{LLM_BASE_URL}/chat/completions",
+            f"{base_url}/chat/completions",
             headers={
-                "Authorization": f"Bearer {LLM_API_KEY}",
+                "Authorization": f"Bearer {api_key}",
                 "Content-Type": "application/json",
             },
             json={
-                "model": LLM_MODEL,
+                "model": model,
                 "messages": messages,
                 "max_tokens": max_tokens,
                 "temperature": temperature,
             },
-            timeout=LLM_TIMEOUT,
-            proxies={"http": LLM_PROXY, "https": LLM_PROXY} if LLM_PROXY else None,
+            timeout=timeout,
+            proxies={"http": proxy, "https": proxy} if proxy else None,
         )
 
         if response.status_code != 200:
-            logger.warning(
-                "LLM returned status %d: %s",
-                response.status_code,
-                response.text[:200],
-            )
+            logger.warning("LLM %s status %d: %s", base_url, response.status_code, response.text[:200])
             return None
 
         data = response.json()
@@ -64,8 +45,34 @@ def chat(
         return text.strip() if text else None
 
     except requests.exceptions.Timeout:
-        logger.warning("LLM call timed out after %.1fs", LLM_TIMEOUT)
+        logger.warning("LLM %s timed out after %.1fs", base_url, timeout)
         return None
     except Exception as e:
-        logger.warning("LLM call failed: %s", e)
+        logger.warning("LLM %s failed: %s", base_url, e)
         return None
+
+
+def chat(
+    messages: List[Dict[str, str]],
+    max_tokens: int = 180,
+    temperature: float = 0.7,
+) -> Optional[str]:
+    result = _call(
+        LLM_BASE_URL, LLM_MODEL, LLM_API_KEY,
+        messages, max_tokens, temperature,
+        LLM_TIMEOUT, LLM_PROXY,
+    )
+    if result is not None:
+        return result
+
+    if GROQ_API_KEY:
+        logger.info("Primary LLM failed, falling back to Groq")
+        result = _call(
+            GROQ_BASE_URL, GROQ_MODEL, GROQ_API_KEY,
+            messages, max_tokens, temperature,
+            GROQ_TIMEOUT, None,
+        )
+        if result is not None:
+            return result
+
+    return None
