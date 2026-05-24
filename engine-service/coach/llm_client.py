@@ -57,16 +57,7 @@ def chat(
     max_tokens: int = 180,
     temperature: float = 0.7,
 ) -> Optional[str]:
-    result = _call(
-        LLM_BASE_URL, LLM_MODEL, LLM_API_KEY,
-        messages, max_tokens, temperature,
-        LLM_TIMEOUT, LLM_PROXY,
-    )
-    if result is not None:
-        return result
-
     if GROQ_API_KEY:
-        logger.info("Primary LLM failed, falling back to Groq")
         result = _call(
             GROQ_BASE_URL, GROQ_MODEL, GROQ_API_KEY,
             messages, max_tokens, temperature,
@@ -74,5 +65,14 @@ def chat(
         )
         if result is not None:
             return result
+        logger.info("Groq failed, falling back to local LLM")
+
+    result = _call(
+        LLM_BASE_URL, LLM_MODEL, LLM_API_KEY,
+        messages, max_tokens, temperature,
+        LLM_TIMEOUT, LLM_PROXY,
+    )
+    if result is not None:
+        return result
 
     return None
