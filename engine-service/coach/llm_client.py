@@ -26,6 +26,7 @@ LLM_BASE_URL = os.getenv("LLM_BASE_URL", "http://host.docker.internal:1234/v1").
 LLM_MODEL = os.getenv("LLM_MODEL", "qwen2.5-7b-instruct")
 LLM_API_KEY = os.getenv("LLM_API_KEY", "lm-studio")
 LLM_TIMEOUT = float(os.getenv("LLM_TIMEOUT", "15"))
+LLM_PROXY = os.getenv("LLM_PROXY")
 
 
 def chat(
@@ -47,6 +48,7 @@ def chat(
                 "temperature": temperature,
             },
             timeout=LLM_TIMEOUT,
+            proxies={"http": LLM_PROXY, "https": LLM_PROXY} if LLM_PROXY else None,
         )
 
         if response.status_code != 200:
