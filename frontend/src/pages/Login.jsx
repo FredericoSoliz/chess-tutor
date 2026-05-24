@@ -98,6 +98,9 @@ export default function Login() {
                         placeholder="Username *"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
+                        autoCapitalize="none"
+                        autoCorrect="off"
+                        spellCheck="false"
                     />
 
                     <div className="password-wrapper">
@@ -106,6 +109,9 @@ export default function Login() {
                             placeholder="Password *"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            autoCapitalize="none"
+                            autoCorrect="off"
+                            spellCheck="false"
                         />
 
                         <span
@@ -121,6 +127,9 @@ export default function Login() {
                             placeholder="Lichess Username (optional)"
                             value={lichessUsername}
                             onChange={(e) => setLichessUsername(e.target.value)}
+                            autoCapitalize="none"
+                            autoCorrect="off"
+                            spellCheck="false"
                         />
                     )}
 
