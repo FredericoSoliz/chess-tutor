@@ -28,13 +28,13 @@ The result is a tool that plays back your games like Lichess analysis, but with 
 
 ## Features
 
-- 📊 **Dashboard** — rating evolution per speed, win rate by colour, top openings with win %, recent games
-- ♛ **Lichess sync** — incremental import via the Lichess API (`since` param, NDJSON streaming)
-- 🔍 **Analysis page** — full Stockfish review of any synced game: per-move category (`★ ! ? ?? ??`), accuracy (Lichess formula), eval bar with best-move arrows
-- 📥 **Import PGN** — drop any PGN file in the browser, get the same review without uploading anywhere
-- 🤖 **AI Coach** — play against Stockfish at five Elo levels with an LLM that comments every move (with opening recognition from the Lichess openings DB)
-- ⚙️ **Settings** — link Lichess account, change password, set default difficulty, force re-sync
-- 📱 **Responsive** — desktop-first but works on mobile (drawer menu, stacked panels)
+-  **Dashboard** — rating evolution per speed, win rate by colour, top openings with win %, recent games
+-  **Lichess sync** — incremental import via the Lichess API (`since` param, NDJSON streaming)
+-  **Analysis page** — full Stockfish review of any synced game: per-move category (`★ ! ? ?? ??`), accuracy (Lichess formula), eval bar with best-move arrows
+-  **Import PGN** — drop any PGN file in the browser, get the same review without uploading anywhere
+-  **AI Coach** — play against Stockfish at five Elo levels with an LLM that comments every move (with opening recognition from the Lichess openings DB)
+-  **Settings** — link Lichess account, change password, set default difficulty, force re-sync
+-  **Responsive** — desktop-first but works on mobile (drawer menu, stacked panels)
 
 ## Architecture
 
@@ -69,13 +69,13 @@ The result is a tool that plays back your games like Lichess analysis, but with 
 
 ## Tech stack
 
-**Backend** — Go 1.21, Gin, GORM, golang-jwt, bcrypt, gin-contrib/cors
-**Engine service** — Python 3.11, Flask, [python-chess](https://github.com/niklasf/python-chess), Stockfish 17, [Lichess openings database](https://github.com/lichess-org/chess-openings)
-**Frontend** — React 19, Vite, React Router, axios, [chess.js](https://github.com/jhlywa/chess.js), [react-chessboard](https://github.com/Clariity/react-chessboard) v5
-**Data** — PostgreSQL on Supabase (session pooler), JSONB for game metadata
-**LLM** — Groq Llama 3.3 70B Versatile (cloud, primary), LM Studio + Qwen 2.5 7B Instruct (local, fallback via Tailscale), OpenAI-compatible REST
-**Infra** — Google Cloud Run (backend + engine service), Vercel (frontend), Tailscale (tailnet for home-to-cloud LLM), GitHub Actions (CI/CD), Artifact Registry, Cloud Build
-**Containers** — Docker, multi-service docker-compose for local development
+- **Backend** — Go 1.21, Gin, GORM, golang-jwt, bcrypt, gin-contrib/cors
+- **Engine service** — Python 3.11, Flask, [python-chess](https://github.com/niklasf/python-chess), Stockfish 17, [Lichess openings database](https://github.com/lichess-org/chess-openings)
+- **Frontend** — React 19, Vite, React Router, axios, [chess.js](https://github.com/jhlywa/chess.js), [react-chessboard](https://github.com/Clariity/react-chessboard) v5
+- **Data** — PostgreSQL on Supabase (session pooler), JSONB for game metadata
+- **LLM** — Groq Llama 3.3 70B Versatile (cloud, primary), LM Studio + Qwen 2.5 7B Instruct (local, fallback via Tailscale), OpenAI-compatible REST
+- **Infra** — Google Cloud Run (backend + engine service), Vercel (frontend), Tailscale (tailnet for home-to-cloud LLM), GitHub Actions (CI/CD), Artifact Registry, Cloud Build
+- **Containers** — Docker, multi-service docker-compose for local development
 
 ## How the coach works
 
