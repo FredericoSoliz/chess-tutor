@@ -4,7 +4,7 @@
     align-items:center;
     width:100%;
     padding:14px 20px 24px;
-    gap:12px;
+    gap:14px;
 }
 
 .analysis-toolbar{
@@ -16,23 +16,33 @@
 }
 
 .analysis-import-btn{
-    background:#4a2f21;
+    background:linear-gradient(135deg, #5b3825, #3d2618);
     color:#f5efe6;
     border:none;
-    padding:7px 14px;
-    border-radius:4px;
+    padding:9px 18px;
+    border-radius:8px;
     font-size:13px;
-    font-weight:500;
+    font-weight:600;
     cursor:pointer;
-    transition:background 0.15s;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    box-shadow:
+        0 4px 12px rgba(74, 49, 36, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transition:transform 0.18s, box-shadow 0.18s;
 }
 .analysis-import-btn:hover{
-    background:#5a3a2a;
+    transform:translateY(-1px);
+    box-shadow:
+        0 8px 18px rgba(74, 49, 36, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .analysis-import-error{
     color:#b6261d;
     font-size:13px;
+    font-weight:500;
 }
 
 .analysis-status{

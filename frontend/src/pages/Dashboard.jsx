@@ -294,7 +294,7 @@ export default function Dashboard() {
                         <RatingChart points={data.rating_history} />
                     </div>
 
-                    <div className="dash-block">
+                    <div className="dash-block dash-block-color">
                         <h3>Win rate by color</h3>
                         <ColorRow
                             label="♔ White"
@@ -310,6 +310,7 @@ export default function Dashboard() {
                             draws={data.by_color.black_draws}
                             total={data.by_color.black_games}
                         />
+
                         <div className="dash-color-legend">
                             <span><span className="dot win" /> Wins</span>
                             <span><span className="dot draw" /> Draws</span>
