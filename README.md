@@ -2,8 +2,6 @@
 
 # ♞ Chess Tutor
 
-**Learn chess with engine analysis, AI coaching and real progress tracking.**
-
 [Live demo](https://chess-tutor-gilt.vercel.app)
 
 ![Go](https://img.shields.io/badge/Go-1.21+-00ADD8?logo=go&logoColor=white)
