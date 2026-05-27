@@ -8,6 +8,16 @@
     overflow:hidden;
 }
 
+@media (max-width: 900px){
+    .stats-panel{
+        width:min(92vw, 480px);
+        height:auto;
+        max-height:60vh;
+        border-left:none;
+        border-top:1px solid #d8d0c5;
+    }
+}
+
 .stats-header{
     background:#4a2f21;
     color:#f5efe6;

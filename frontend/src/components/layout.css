@@ -1,5 +1,3 @@
-/* ---------- GLOBAL LAYOUT ---------- */
-
 .app-layout {
     display: flex;
     height: 100vh;
@@ -7,18 +5,15 @@
     background: #f5efe6;
 }
 
-/* ---------- SIDEBAR ---------- */
-
 .sidebar {
     width: 260px;
     background: linear-gradient(180deg, #3b281d, #241712);
     color: white;
-
     padding: 32px 24px;
-
     display: flex;
     flex-direction: column;
     border-right: 1px solid rgba(255,255,255,0.06);
+    flex-shrink: 0;
 }
 
 .sidebar-logo {
@@ -37,13 +32,10 @@
 .sidebar-menu a {
     text-decoration: none;
     color: #d7c5b5;
-
     padding: 14px 16px;
     border-radius: 12px;
-
     font-size: 15px;
     font-weight: 500;
-
     transition: 0.2s ease;
 }
 
@@ -57,29 +49,49 @@
     color: white;
 }
 
-/* ---------- RIGHT AREA ---------- */
+.sidebar-backdrop {
+    display: none;
+}
 
 .main-section {
     flex: 1;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    min-width: 0;
 }
-
-/* ---------- NAVBAR ---------- */
 
 .navbar {
     height: 86px;
     background: rgba(255,255,255,0.75);
     backdrop-filter: blur(10px);
-
     display: flex;
     align-items: center;
     justify-content: space-between;
-
     padding: 0 36px;
-
     border-bottom: 1px solid rgba(0,0,0,0.05);
+    flex-shrink: 0;
+}
+
+.navbar-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.navbar-hamburger {
+    display: none;
+    background: transparent;
+    border: none;
+    color: #2e231c;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 8px;
+}
+
+.navbar-hamburger:hover {
+    background: rgba(0,0,0,0.06);
 }
 
 .navbar h2 {
@@ -93,16 +105,12 @@
     color: #7a6555;
 }
 
-/* ---------- BUTTON ---------- */
-
 .logout-btn {
     border: none;
     padding: 12px 20px;
     border-radius: 12px;
-
     background: #4a3124;
     color: white;
-
     font-weight: 600;
     cursor: pointer;
     transition: 0.2s ease;
@@ -113,8 +121,6 @@
     transform: translateY(-1px);
 }
 
-/* ---------- PAGE CONTENT ---------- */
-
 .page-content {
     flex: 1;
     padding: 34px;
@@ -123,24 +129,57 @@
     justify-content: center;
     align-items: flex-start;
     overflow-y: auto;
+    overflow-x: hidden;
 }
-
-/* ---------- MOBILE ---------- */
 
 @media (max-width: 900px) {
     .sidebar {
-        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        z-index: 100;
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+    }
+
+    .sidebar.mobile-open {
+        transform: translateX(0);
+    }
+
+    .sidebar-backdrop {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.45);
+        z-index: 90;
+    }
+
+    .navbar-hamburger {
+        display: block;
     }
 
     .navbar {
-        padding: 0 20px;
-    }
-
-    .page-content {
-        padding: 20px;
+        padding: 0 16px;
+        height: 64px;
     }
 
     .navbar h2 {
-        font-size: 22px;
+        font-size: 18px;
+    }
+
+    .navbar p {
+        font-size: 12px;
+    }
+
+    .logout-btn {
+        padding: 8px 14px;
+        font-size: 13px;
+        border-radius: 8px;
+    }
+
+    .page-content {
+        padding: 16px;
+        padding-top: 24px;
     }
 }

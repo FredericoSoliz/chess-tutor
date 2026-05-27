@@ -1,4 +1,4 @@
-export default function Navbar() {
+export default function Navbar({ onMenuClick }) {
 
     const logout = () => {
         localStorage.removeItem("token");
@@ -8,9 +8,20 @@ export default function Navbar() {
     return (
         <header className="navbar">
 
-            <div>
-                <h2>Welcome back</h2>
-                <p>Ready to improve today?</p>
+            <div className="navbar-left">
+                {onMenuClick && (
+                    <button
+                        className="navbar-hamburger"
+                        onClick={onMenuClick}
+                        aria-label="Open menu"
+                    >
+                        ☰
+                    </button>
+                )}
+                <div>
+                    <h2>Welcome back</h2>
+                    <p>Ready to improve today?</p>
+                </div>
             </div>
 
             <button className="logout-btn" onClick={logout}>

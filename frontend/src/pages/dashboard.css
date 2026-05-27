@@ -330,4 +330,10 @@
 @media (max-width: 900px){
     .dash-cards{ grid-template-columns:repeat(2, 1fr); }
     .dash-grid{ grid-template-columns:1fr; }
+    .dashboard-page{ padding:16px 8px 24px; }
+}
+
+@media (max-width: 500px){
+    .dash-cards{ grid-template-columns:1fr; }
+    .dash-card-value{ font-size:22px; }
 }

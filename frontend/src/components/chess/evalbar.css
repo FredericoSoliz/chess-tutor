@@ -46,3 +46,9 @@
     top: 6px;
     color: #f5efe6;
 }
+
+@media (max-width: 900px) {
+    .eval-bar {
+        display: none;
+    }
+}
