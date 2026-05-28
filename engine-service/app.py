@@ -27,7 +27,7 @@ stockfish = StockfishService(ENGINE_PATH)
 
 @app.route("/health", methods=["GET"])
 def health():
-    return jsonify({"status": "ok"})
+    return jsonify({"status": "ok", "service": "engine-service"})
 
 
 @app.route("/analyze", methods=["POST"])
